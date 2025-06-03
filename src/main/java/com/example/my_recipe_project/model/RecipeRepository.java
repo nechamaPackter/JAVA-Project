@@ -1,12 +1,22 @@
+package com.example.my_recipe_project.model;
+
+import java.time.LocalDate;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 @Entity
 @Table
-@Data
-public enum Level {
+
+ enum Level {
     EASY,
     MEDIUM,
     HARD
 }
-public enum TypeFood{
+ enum TypeFood{
     Main_courses,
     Last_courses,
     Starters,
@@ -35,7 +45,7 @@ public class RecipeRepository {
     @Column 
     private TypeFood typeFood;
     @Column
-    private DateTime dateCreated;
+    private LocalDate dateCreated;
     @Column
     private int preparationTime; 
 
