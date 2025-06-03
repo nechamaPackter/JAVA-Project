@@ -1,0 +1,44 @@
+.response {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+  font-family: sans-serif;
+}
+
+.response-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.response-content {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.response-reactions {
+  display: flex;
+  gap: 1rem;
+}
+
+.reaction-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #333;
+
+  &:hover {
+    color: #007BFF;
+  }
+
+  .count {
+    font-weight: bold;
+  }
+}

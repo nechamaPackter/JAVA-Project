@@ -1,0 +1,67 @@
+.product-row {
+  font-family: sans-serif;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #ccc;
+  overflow: visible; /* חשוב שה-popup לא ייחתך */
+}
+
+.name-amount-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative; /* כדי שה-popup יהיה יחסית אליו */
+}
+
+.icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.amount {
+  font-size: 1rem;
+  color: #333;
+}
+
+.replacement-icon {
+  position: relative;
+  color: #e67e22;
+  font-weight: bold;
+  cursor: default;
+  margin-left: 0.5rem;
+  user-select: none;
+
+  &:hover .replacement-popup {
+    display: flex; /* מוצג רק במעבר עכבר */
+  }
+}
+
+.replacement-popup {
+  display: none; /* מוסתר כברירת מחדל */
+  position: absolute;
+  top: 120%; /* מתחת לסימן הקריאה */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  z-index: 1000;
+  gap: 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  flex-direction: row;
+}
+
+.replacement-name {
+  font-weight: bold;
+}
+
+.replacement-amount {
+  color: #555;
+}
