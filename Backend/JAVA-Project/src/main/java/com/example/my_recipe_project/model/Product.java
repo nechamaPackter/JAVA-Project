@@ -20,5 +20,5 @@ public class Product {
     private String name;
 
     @Column
-    private char icon;
+    private String icon;
 }

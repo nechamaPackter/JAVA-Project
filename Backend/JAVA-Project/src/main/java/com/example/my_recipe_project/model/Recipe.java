@@ -11,20 +11,20 @@ import jakarta.persistence.Table;
 @Entity
 @Table
 
- enum Level {
-    EASY,
-    MEDIUM,
-    HARD
-}
+//  enum Level {
+//     EASY,
+//     MEDIUM,
+//     HARD
+// }
 
- enum TypeFood{
-    Main_courses,
-    Last_courses,
-    Starters,
-    Soup,
-    Pies,
-    Cakes,
-}
+//   enum TypeFood{
+//     Main_courses,
+//     Last_courses,
+//     Starters,
+//     Soup,
+//     Pies,
+//     Cakes,
+// }
 public class Recipe {
 
     @Id
@@ -41,10 +41,10 @@ public class Recipe {
     @Column
     private String imageUrl;
     @Column
-    private Level level;
+    private String level;
 
     @Column 
-    private TypeFood typeFood;
+    private String typeFood;
     @Column
     private LocalDate dateCreated;
     @Column

@@ -2,6 +2,7 @@
 import React from 'react';
 import Recipe from './components/Recipe/Recipe';
 import { RecipeModel } from './models/RecipeModel';
+import Login from './components/Login/Login';
 
 const sampleRecipe: RecipeModel = {
   id: 1,
@@ -42,7 +43,8 @@ const sampleRecipe: RecipeModel = {
 const App = () => {
   return (
     <div style={{ padding: '2rem' }}>
-      <Recipe recipe={sampleRecipe} />
+      {/* <Recipe recipe={sampleRecipe} /> */}
+      <Login></Login>
     </div>
   );
 };
