@@ -28,9 +28,9 @@ public class Replay {
     private String content;
 
     @Column
-    private int like;
+    private int likeCount;
     @Column
-    private int dislike;
+    private int dislikeCount;
 
     @Column
     private LocalDate date;
