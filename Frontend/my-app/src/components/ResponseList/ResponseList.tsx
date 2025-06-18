@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ResponseModel } from '../../models/ResponseModel';
 import './ResponseList.scss';
 
-type ResponseListProps = {
-  initialResponses?: ResponseModel[];
-};
-
-const ResponseList = ({ initialResponses = [] }: ResponseListProps) => {
-  const [responses, setResponses] = useState<ResponseModel[]>(initialResponses);
+const ResponseList = () => {
+  const [responses, setResponses] = useState<ResponseModel[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [newName, setNewName] = useState('');
   const [newContent, setNewContent] = useState('');
+
+  // טעינת תגובות מהשרת
+  useEffect(() => {
+    fetch('http://localhost:8080/api/replays')
+      .then((res) => res.json())
+      .then((data) => {
+        const mapped = data.map((item: any) => ({
+          ...item,
+          date: new Date(item.date),
+        }));
+        setResponses(mapped);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('שגיאה בטעינת תגובות:', err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleAddResponse = () => {
     if (!newName.trim() || !newContent.trim()) return;
@@ -23,22 +38,28 @@ const ResponseList = ({ initialResponses = [] }: ResponseListProps) => {
       date: new Date(),
     };
 
-    setResponses([newResponse, ...responses]);
-    setNewName('');
-    setNewContent('');
+    // שליחה לשרת
+    fetch('http://localhost:8080/api/replays', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...newResponse,
+        date: newResponse.date.toISOString().split('T')[0] // תאריך בפורמט yyyy-MM-dd
+      }),
+    })
+      .then((res) => res.json())
+      .then((savedResponse) => {
+        savedResponse.date = new Date(savedResponse.date);
+        setResponses([savedResponse, ...responses]);
+        setNewName('');
+        setNewContent('');
+      })
+      .catch((err) => {
+        console.error('שגיאה בשליחת תגובה:', err);
+      });
   };
 
-  const handleLike = (index: number) => {
-    const updated = [...responses];
-    updated[index].like++;
-    setResponses(updated);
-  };
-
-  const handleDislike = (index: number) => {
-    const updated = [...responses];
-    updated[index].dislike++;
-    setResponses(updated);
-  };
+  if (loading) return <div>טוען תגובות...</div>;
 
   return (
     <div className="response-list">
@@ -66,8 +87,8 @@ const ResponseList = ({ initialResponses = [] }: ResponseListProps) => {
           </div>
           <div className="response-content">{res.content}</div>
           <div className="response-actions">
-            <button onClick={() => handleLike(index)}>👍 {res.like}</button>
-            <button onClick={() => handleDislike(index)}>👎 {res.dislike}</button>
+            <span>👍 {res.like}</span>
+            <span style={{ marginInlineStart: '1rem' }}>👎 {res.dislike}</span>
           </div>
         </div>
       ))}
