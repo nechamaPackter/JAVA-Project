@@ -10,21 +10,6 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table
-
-//  enum Level {
-//     EASY,
-//     MEDIUM,
-//     HARD
-// }
-
-//   enum TypeFood{
-//     Main_courses,
-//     Last_courses,
-//     Starters,
-//     Soup,
-//     Pies,
-//     Cakes,
-// }
 public class Recipe {
 
     @Id
@@ -33,25 +18,106 @@ public class Recipe {
 
     @Column
     private String name;
-    
-    
+
     @Column
     private String instructions;
-    
+
     @Column
     private String imageUrl;
+
     @Column
     private String level;
 
     @Column 
     private String typeFood;
+
     @Column
     private LocalDate dateCreated;
+
     @Column
-    private int preparationTime; 
+    private int preparationTime;
 
+    // === Getters and Setters ===
 
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    // Additional fields can be added as needed, such as preparation time, cooking time, etc.
-}   
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getLevel() {
+        return level;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
+    }
+
+    public String getTypeFood() {
+        return typeFood;
+    }
+
+    public void setTypeFood(String typeFood) {
+        this.typeFood = typeFood;
+    }
+
+    public LocalDate getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(LocalDate dateCreated) {
+        this.dateCreated = dateCreated;
+    }
+
+    public int getPreparationTime() {
+        return preparationTime;
+    }
+
+    public void setPreparationTime(int preparationTime) {
+        this.preparationTime = preparationTime;
+    }
+
+    // אפשר להחזיר את ה-enums אם תרצי להשתמש בהם:
+    /*
+    enum Level {
+        EASY,
+        MEDIUM,
+        HARD
+    }
+
+    enum TypeFood {
+        Main_courses,
+        Last_courses,
+        Starters,
+        Soup,
+        Pies,
+        Cakes
+    }
+    */
+}
