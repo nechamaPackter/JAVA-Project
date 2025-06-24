@@ -76,17 +76,28 @@
 // };
 
 // export default App;
+// src/App.tsx
 import React from 'react';
-import SignUpForm from './components/SignUp/SignUp'; // וודאי שהנתיב נכון
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import SignUpForm from './components/SignUp/SignUp';
+import HomePage from './components/CustomerHomePage/CustomerHomePage';
 
 const App = () => {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>הרשמה למערכת</h1>
-      <SignUpForm />
-    </div>
+    <BrowserRouter>
+      <div style={{ padding: '2rem' }}>
+        <h1>הרשמה למערכת</h1>
+        <Routes>
+          <Route path="/" element={<SignUpForm />} />
+          <Route path="/home" element={<HomePage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 };
 
 export default App;
+
+
+
 

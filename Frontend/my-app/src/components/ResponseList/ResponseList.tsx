@@ -1,99 +1,49 @@
-import React, { useEffect, useState } from 'react';
-import { ResponseModel } from '../../models/ResponseModel';
-import './ResponseList.scss';
+import React from "react";
+import { RecipeModel } from "../../models/RecipeModel";
+import Recipe from "../Recipe/Recipe";
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; // 👈 זה המקום לכתוב את זה
 
-const ResponseList = () => {
-  const [responses, setResponses] = useState<ResponseModel[]>([]);
-  const [loading, setLoading] = useState(true);
+type Props = {
+  recipes: RecipeModel[];
+  onDelete?: (id: number) => void;
+};
 
-  const [newName, setNewName] = useState('');
-  const [newContent, setNewContent] = useState('');
+const RecipeList = ({ recipes, onDelete }: Props) => {
+  const navigate = useNavigate(); // 👈 וזה כאן בתוך הקומפוננטה
 
-  // טעינת תגובות מהשרת
-  useEffect(() => {
-    fetch('http://localhost:8080/api/replays')
-      .then((res) => res.json())
-      .then((data) => {
-        const mapped = data.map((item: any) => ({
-          ...item,
-          date: new Date(item.date),
-        }));
-        setResponses(mapped);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error('שגיאה בטעינת תגובות:', err);
-        setLoading(false);
-      });
-  }, []);
-
-  const handleAddResponse = () => {
-    if (!newName.trim() || !newContent.trim()) return;
-
-    const newResponse: ResponseModel = {
-      CustomerName: newName,
-      content: newContent,
-      like: 0,
-      dislike: 0,
-      date: new Date(),
-    };
-
-    // שליחה לשרת
-    fetch('http://localhost:8080/api/replays', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...newResponse,
-        date: newResponse.date.toISOString().split('T')[0] // תאריך בפורמט yyyy-MM-dd
-      }),
-    })
-      .then((res) => res.json())
-      .then((savedResponse) => {
-        savedResponse.date = new Date(savedResponse.date);
-        setResponses([savedResponse, ...responses]);
-        setNewName('');
-        setNewContent('');
-      })
-      .catch((err) => {
-        console.error('שגיאה בשליחת תגובה:', err);
-      });
+  const handleDelete = async (id: number) => {
+    if (!window.confirm("האם את/ה בטוח שברצונך למחוק את המתכון?")) return;
+    try {
+      await axios.delete(`/api/recipes/${id}`);
+      if (onDelete) onDelete(id);
+    } catch (error) {
+      console.error("שגיאה במחיקה:", error);
+      alert("שגיאה במחיקת המתכון");
+    }
   };
 
-  if (loading) return <div>טוען תגובות...</div>;
+  const handleEdit = (id: number) => {
+    navigate(`/edit-recipe/${id}`); // 👈 כאן מתבצע הניווט לדף העריכה
+  };
 
   return (
-    <div className="response-list">
-      <h3>תגובות</h3>
-
-      <div className="new-response">
-        <input
-          type="text"
-          placeholder="השם שלך"
-          value={newName}
-          onChange={(e) => setNewName(e.target.value)}
-        />
-        <textarea
-          placeholder="כתוב/י תגובה..."
-          value={newContent}
-          onChange={(e) => setNewContent(e.target.value)}
-        />
-        <button onClick={handleAddResponse}>שלח תגובה</button>
-      </div>
-
-      {responses.map((res, index) => (
-        <div key={index} className="response">
-          <div className="response-header">
-            <strong>{res.CustomerName}</strong> - {res.date.toLocaleDateString()}
+    <div className="recipe-list">
+      {recipes.length === 0 ? (
+        <div>לא נמצאו מתכונים.</div>
+      ) : (
+        recipes.map((recipe) => (
+          <div key={recipe.id} className="recipe-item">
+            <Recipe recipe={recipe} />
+            <div style={{ marginTop: "0.5rem", display: "flex", gap: "0.5rem" }}>
+              <button onClick={() => handleEdit(recipe.id)}>ערוך</button> {/* 👈 כפתור עריכה */}
+              <button onClick={() => handleDelete(recipe.id)}>מחק</button>
+            </div>
           </div>
-          <div className="response-content">{res.content}</div>
-          <div className="response-actions">
-            <span>👍 {res.like}</span>
-            <span style={{ marginInlineStart: '1rem' }}>👎 {res.dislike}</span>
-          </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 };
 
-export default ResponseList;
+export default RecipeList;

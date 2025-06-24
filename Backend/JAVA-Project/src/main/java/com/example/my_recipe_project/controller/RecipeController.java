@@ -1,20 +1,28 @@
 package com.example.my_recipe_project.controller;
 
 import com.example.my_recipe_project.dal.RecipeRepository;
+import com.example.my_recipe_project.dal.CustomersRepository;
+import com.example.my_recipe_project.model.Customers;
 import com.example.my_recipe_project.model.Recipe;
-//import com.example.my_recipe_project.repository.RecipeRepository;
+import com.example.my_recipe_project.model.Allergens;
+import com.example.my_recipe_project.model.Ingredient;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/recipes")
-@CrossOrigin(origins = "*") // מאפשר גישה מה-React
+@CrossOrigin(origins = "*")
 public class RecipeController {
 
     @Autowired
-     RecipeRepository recipeRepository;
+    private RecipeRepository recipeRepository;
+
+    @Autowired
+    private CustomersRepository customersRepository;
 
     // מחזיר את כל המתכונים
     @GetMapping
@@ -57,4 +65,29 @@ public class RecipeController {
     public void deleteRecipe(@PathVariable int id) {
         recipeRepository.deleteById(id);
     }
+
+    // ✅ מתכון מתאים לפי אלרגיות לקוח
+@GetMapping("/for-customer/{customerId}")
+public List<Recipe> getRecipesWithoutAllergens(@PathVariable Integer customerId) {
+    // שליפת הלקוח לפי מזהה
+    Customers customer = customersRepository.findById(customerId).orElse(null);
+    if (customer == null) return List.of(); // אם לא נמצא – מחזיר רשימה ריקה
+
+    // חילוץ כל מזהי האלרגנים של הלקוח
+    List<Integer> allergenIds = customer.getAllergensList().stream()
+            .map(Allergens::getId)
+            .collect(Collectors.toList());
+
+    // סינון כל המתכונים לפי תנאי: שלא מכילים מרכיבים עם האלרגנים של הלקוח
+    return recipeRepository.findAll().stream()
+            .filter(recipe ->
+                    recipe.getIngredients().stream()
+                            .noneMatch(i ->
+                                    i.getAllergen() != null &&
+                                    allergenIds.contains(i.getAllergen().getId())
+                            )
+            )
+            .collect(Collectors.toList());
+}
+
 }

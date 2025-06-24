@@ -25,7 +25,7 @@ public class SinUpController {
     // 🔵 1. הרשמת לקוח חדש
     @PostMapping("/customers/register")
     @Transactional
-    public void registerCustomer(@RequestBody RegisterRequest request) {
+    public long registerCustomer(@RequestBody RegisterRequest request) {
         Customers customer = new Customers();
         customer.setName(request.name);
         customer.setEmail(request.email);
@@ -35,7 +35,13 @@ public class SinUpController {
         List<Allergens> selectedAllergens = allergensRepository.findAllById(request.allergenIds);
         customer.setAllergensList(selectedAllergens);
 
-        customersRepository.save(customer);
+        Customers saved = customersRepository.save(customer);
+        return saved.getId();
+    }
+    
+    @GetMapping("/customers/allergens")
+    public List<Allergens> getAllergens() {
+    return allergensRepository.findAll();
     }
 
     // 🟡 מחלקת עזר לקליטת ההרשמה

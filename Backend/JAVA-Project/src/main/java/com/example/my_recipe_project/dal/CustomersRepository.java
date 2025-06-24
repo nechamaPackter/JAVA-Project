@@ -1,6 +1,7 @@
 package com.example.my_recipe_project.dal;
 
 import com.example.my_recipe_project.model.Customers;
+import com.example.my_recipe_project.model.Recipe;
 
 import java.util.Optional;
 
@@ -11,4 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface CustomersRepository extends JpaRepository<Customers, Integer> {
 
     Optional<Customers> findByEmailAndPassword(String email, String password);
+
+    Optional<Recipe> findAllById(Long customerId);
 }

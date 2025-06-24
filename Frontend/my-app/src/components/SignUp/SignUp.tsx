@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './SignUp.scss';
 import axios from 'axios';
-
+import { useNavigate } from 'react-router-dom';
+import { wait } from '@testing-library/user-event/dist/utils';
 interface Allergy {
   id: number;
   name: string;
 }
 
 export default function SignUpForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    phoneNumber:'',
     allergenIds: [] as number[],
   });
 
@@ -43,8 +46,10 @@ export default function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('/api/customers/register', formData);
-      alert('נרשמת בהצלחה!');
+      const res = await axios.post('/api/customers/register', formData);
+      const customerId = res.data;
+      localStorage.setItem('curtomerId',customerId.toString());
+      navigate('/home')
     } catch (error) {
       console.error(error);
       alert('שגיאה בהרשמה');
@@ -57,7 +62,7 @@ export default function SignUpForm() {
       <input name="name" placeholder="שם" onChange={handleChange} required />
       <input name="email" placeholder="אימייל" type="email" onChange={handleChange} required />
       <input name="password" placeholder="סיסמה" type="password" onChange={handleChange} required />
-
+      <input name="phoneNumber" placeholder="פלאפון" onChange={handleChange} required />
       <div className="allergy-list">
         <p>סמן אלרגיות:</p>
         {allergyList.map(allergy => (

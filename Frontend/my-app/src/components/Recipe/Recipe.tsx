@@ -34,7 +34,7 @@ const Recipe = ({ recipe }: Props) => {
         ))}
       </div>
       <div>
-        <ResponseList />
+        <ResponseList recipes={[recipe]} />
       </div>
     </div>
   );
