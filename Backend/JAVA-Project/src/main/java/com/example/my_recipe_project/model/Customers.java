@@ -2,7 +2,9 @@ package com.example.my_recipe_project.model;
 
 import java.util.List;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -29,11 +31,7 @@ public class Customers {
     private String phoneNumber;
     @Column
     private String password;
-    @ManyToMany
-    @JoinTable(
-        name = "customer_allergens",
-        joinColumns = @JoinColumn(name = "customer_id"),
-        inverseJoinColumns = @JoinColumn(name = "allergen_id")
-    )
-    private List<Allergens> allergensList;
+
+    @Column(length = 1000)
+    private String allergenIds; // "1,3,4"
 }

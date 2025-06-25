@@ -1,8 +1,6 @@
 package com.example.my_recipe_project.controller;
 
-import com.example.my_recipe_project.dal.AllergensRepository;
 import com.example.my_recipe_project.dal.CustomersRepository;
-import com.example.my_recipe_project.model.Allergens;
 import com.example.my_recipe_project.model.Customers;
 
 import jakarta.transaction.Transactional;
@@ -10,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -19,23 +18,25 @@ public class SinUpController {
     @Autowired
     private CustomersRepository customersRepository;
 
-    @Autowired
-    private AllergensRepository allergensRepository;
-
     // 🔵 1. הרשמת לקוח חדש
     @PostMapping("/customers/register")
     @Transactional
-    public void registerCustomer(@RequestBody RegisterRequest request) {
+    public long registerCustomer(@RequestBody RegisterRequest request) {
         Customers customer = new Customers();
         customer.setName(request.name);
         customer.setEmail(request.email);
         customer.setPhoneNumber(request.phoneNumber);
         customer.setPassword(request.password);
 
-        List<Allergens> selectedAllergens = allergensRepository.findAllById(request.allergenIds);
-        customer.setAllergensList(selectedAllergens);
+        // המרה של רשימת מזהי האלרגיות למחרוזת מופרדת בפסיקים
+        List<Integer> selectedAllergenIds = request.allergenIds;
+        String allergenIdsString = selectedAllergenIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(","));
+        customer.setAllergenIds(allergenIdsString);
 
-        customersRepository.save(customer);
+        Customers saved = customersRepository.save(customer);
+        return saved.getId();
     }
 
     // 🟡 מחלקת עזר לקליטת ההרשמה
@@ -44,6 +45,6 @@ public class SinUpController {
         public String email;
         public String phoneNumber;
         public String password;
-        public List<Integer> allergenIds;
+        public List<Integer> allergenIds; // 🟢 עכשיו זה תואם לקוד למעלה
     }
 }

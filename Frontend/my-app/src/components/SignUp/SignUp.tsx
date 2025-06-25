@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './SignUp.scss';
 import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
 
 interface Allergy {
   id: number;
@@ -8,10 +9,12 @@ interface Allergy {
 }
 
 export default function SignUpForm() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    phoneNumber: '',
     allergenIds: [] as number[],
   });
 
@@ -20,7 +23,6 @@ export default function SignUpForm() {
   useEffect(() => {
     axios.get('/api/customers/allergens')
       .then(res => {
-        console.log('Allergies from server:', res.data);
         setAllergyList(res.data);
       })
       .catch(err => console.error('Error loading allergies:', err));
@@ -35,7 +37,7 @@ export default function SignUpForm() {
     setFormData(prev => ({
       ...prev,
       allergenIds: prev.allergenIds.includes(id)
-        ? prev.allergenIds.filter((a: number) => a !== id)
+        ? prev.allergenIds.filter(a => a !== id)
         : [...prev.allergenIds, id]
     }));
   };
@@ -43,8 +45,10 @@ export default function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('/api/customers/register', formData);
-      alert('נרשמת בהצלחה!');
+      const res = await axios.post('/api/customers/register', formData);
+      const customerId = res.data;
+      localStorage.setItem('customerId', customerId.toString());
+      navigate('/home');
     } catch (error) {
       console.error(error);
       alert('שגיאה בהרשמה');
@@ -57,7 +61,7 @@ export default function SignUpForm() {
       <input name="name" placeholder="שם" onChange={handleChange} required />
       <input name="email" placeholder="אימייל" type="email" onChange={handleChange} required />
       <input name="password" placeholder="סיסמה" type="password" onChange={handleChange} required />
-
+      <input name="phoneNumber" placeholder="פלאפון" onChange={handleChange} required />
       <div className="allergy-list">
         <p>סמן אלרגיות:</p>
         {allergyList.map(allergy => (
@@ -73,6 +77,10 @@ export default function SignUpForm() {
       </div>
 
       <button type="submit">הרשמה</button>
+
+      <p style={{ marginTop: 10 }}>
+        כבר יש לך משתמש? <Link to="/login">התחבר כאן</Link>
+      </p>
     </form>
   );
 }

@@ -1,6 +1,7 @@
 package com.example.my_recipe_project.model;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -101,6 +102,16 @@ public class Recipe {
 
     public void setPreparationTime(int preparationTime) {
         this.preparationTime = preparationTime;
+    }
+
+    public Collection<Recipe> getIngredients() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getIngredients'");
+    }
+
+    public Object getAllergen() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getAllergen'");
     }
 
     // אפשר להחזיר את ה-enums אם תרצי להשתמש בהם:

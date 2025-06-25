@@ -76,17 +76,42 @@
 // };
 
 // export default App;
+// import React from 'react';
+// import SignUpForm from './components/SignUp/SignUp'; // וודאי שהנתיב נכון
+
+// const App = () => {
+//   return (
+//     <div style={{ padding: '2rem' }}>
+//       <h1>הרשמה למערכת</h1>
+//       <SignUpForm />
+//     </div>
+//   );
+// };
+
+// export default App;
 import React from 'react';
-import SignUpForm from './components/SignUp/SignUp'; // וודאי שהנתיב נכון
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import SignUpForm from './components/SignUp/SignUp';
+import HomePage from './components/CustomerHomePage/CustomerHomePage';
+import AdminHomePage from './components/ManagerHomePage/ManagerHomePage';
+import AddRecipeForm from './components/AddRecipe/AddRecipe';
+import Login from './components/Login/Login';
 
 const App = () => {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>הרשמה למערכת</h1>
-      <SignUpForm />
-    </div>
+    <BrowserRouter>
+      <div style={{ padding: '2rem' }}>
+        <h1>הרשמה למערכת</h1>
+        <Routes>
+          <Route path="/" element={<SignUpForm />} />
+           <Route path="/home" element={<AdminHomePage />} /> 
+           <Route path="/login" element={<Login />}/>
+          {/* <Route path="/admin" element={<AdminHomePage />} /> */}
+        <Route path="/admin/add-recipe" element={<AddRecipeForm />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 };
 
 export default App;
-

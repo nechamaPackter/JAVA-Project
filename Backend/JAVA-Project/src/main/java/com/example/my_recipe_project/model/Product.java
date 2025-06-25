@@ -21,4 +21,5 @@ public class Product {
 
     @Column
     private String icon;
+
 }
