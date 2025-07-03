@@ -1,0 +1,32 @@
+
+package com.example.my_recipe_project.controller;
+
+import com.example.my_recipe_project.dal.CustomersRepository;
+import com.example.my_recipe_project.model.Customers;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+public class LoginController {
+
+    @Autowired
+    private CustomersRepository customersRepository;
+
+    @PostMapping("/customers/login")
+    public Customers login(@RequestBody LoginRequest request) {
+        Optional<Customers> optionalCustomer =
+                customersRepository.findByEmailAndPassword(request.email, request.password);
+
+        return optionalCustomer.orElseThrow(() ->
+                new RuntimeException("אימייל או סיסמה לא נכונים"));
+    }
+
+    public static class LoginRequest {
+        public String email;
+        public String password;
+    }
+}

@@ -1,78 +1,37 @@
-import React from 'react';
-import RecipeList from './components/ListRecipe/ListRecipe';
-import { RecipeModel } from './models/RecipeModel';
 
-const sampleRecipes: RecipeModel[] = [
-  {
-    id: 1,
-    name: 'סלט ירקות',
-    instructions: 'לחתוך את כל הירקות לקוביות, לערבב ולהוסיף תיבול.',
-    imageUrl: 'https://via.placeholder.com/200',
-    level: 'קל',
-    typeFood: 'סלט',
-    dateCreated: new Date(),
-    preparationTime: 10,
-    products: [
-      {
-        id: 1,
-        productReplacement: false,
-        name: 'מלפפון',
-        icon: '🥒',
-        amount: '2 יחידות',
-      },
-      {
-        id: 2,
-        productReplacement: true,
-        name: 'עגבנייה',
-        icon: '🍅',
-        amount: '3 יחידות',
-        productNameReplacement: 'עגבניית שרי',
-        productAmountReplacement: '5 יחידות',
-      },
-      {
-        id: 3,
-        productReplacement: false,
-        name: 'בצל',
-        icon: '🧅',
-        amount: '1 יחידה',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'פסטה ברוטב עגבניות',
-    instructions: 'לבשל פסטה, להכין רוטב ולערבב.',
-    imageUrl: 'https://via.placeholder.com/200',
-    level: 'בינוני',
-    typeFood: 'פסטה',
-    dateCreated: new Date(),
-    preparationTime: 25,
-    products: [
-      {
-        id: 1,
-        productReplacement: false,
-        name: 'פסטה',
-        icon: '🍝',
-        amount: '500 גרם',
-      },
-      {
-        id: 2,
-        productReplacement: false,
-        name: 'רוטב עגבניות',
-        icon: '🍅',
-        amount: '1 כוס',
-      },
-    ],
-  },
-];
+import React, { Suspense, lazy } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import ToastComponent from './components/ToastComponent/ToastComponent';
 
-const App = () => {
+const Login = lazy(() => import('./components/Login/Login'));
+const SignUpForm = lazy(() => import('./components/SignUp/SignUp'));
+const CustomerHomePage = lazy(() => import('./components/CustomerHomePage/CustomerHomePage'));
+const ManagerHomePage = lazy(() => import('./components/ManagerHomePage/ManagerHomePage'));
+
+function App() {
+  const user = JSON.parse(localStorage.getItem("customerId") || "null");
+  const role = localStorage.getItem("role");
+
+  const renderHomePage = () => {
+    if (!user) return <Navigate to="/login" />;
+    if (role === 'manager') return <ManagerHomePage />;
+    return <CustomerHomePage />;
+  };
+
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>ברוכים הבאים לרשימת המתכונים</h1>
-      <RecipeList recipes={sampleRecipes} />
-    </div>
+    <Router>
+      <ToastComponent />
+      <Suspense fallback={<div>טוען...</div>}>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<SignUpForm />} />
+          <Route path="/home" element={renderHomePage()} />
+          <Route path="*" element={<div>404 - הדף לא נמצא</div>} />
+        </Routes>
+      </Suspense>
+    </Router>
   );
-};
+}
 
 export default App;
