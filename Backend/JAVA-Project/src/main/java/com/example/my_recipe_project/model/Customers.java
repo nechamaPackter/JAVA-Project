@@ -34,4 +34,8 @@ public class Customers {
 
     @Column(length = 1000)
     private String allergenIds; // "1,3,4"
+
+    @Column
+    private boolean isManager;
+    
 }

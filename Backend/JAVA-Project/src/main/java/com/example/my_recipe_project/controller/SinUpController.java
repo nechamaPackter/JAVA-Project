@@ -1,3 +1,4 @@
+
 package com.example.my_recipe_project.controller;
 
 import com.example.my_recipe_project.dal.CustomersRepository;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 public class SinUpController {
 
     @Autowired
@@ -45,6 +46,6 @@ public class SinUpController {
         public String email;
         public String phoneNumber;
         public String password;
-        public List<Integer> allergenIds; // 🟢 עכשיו זה תואם לקוד למעלה
+        public List<Integer> allergenIds;
     }
 }

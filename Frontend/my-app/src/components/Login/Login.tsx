@@ -1,67 +1,91 @@
-import { useState } from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
 import axios from "axios";
-import './Login.scss';
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux'; // הוספת useDispatch
+import { setUser } from '../../redux/userSlice'; // הוספת setUser
+import "./Login.scss";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // שימוש ב-dispatch
 
-  const handleLogin = async (e:any) => {
-    e.preventDefault();
-    setError("");
-    try {
-      const response = await axios.post("http://localhost:8080/api/customers/login", {
-        email,
-        password,
-      });
-      if (response.data.success) {
-        setSuccess(true);
-      } else {
-        setError("Invalid credentials");
-      }
-    } catch (err) {
-      setError("Login failed. Please try again.");
-    }
+  const initialValues = {
+    email: "",
+    password: "",
   };
+
+  const validationSchema = Yup.object({
+    email: Yup.string().email("אימייל לא תקין").required("שדה חובה"),
+    password: Yup.string().required("שדה חובה"),
+  });
+
+  const handleSubmit = async (values: typeof initialValues, { setSubmitting, setFieldError }: any) => {
+  try {
+    const response = await axios.post("http://localhost:8080/api/customers/login", values, {
+  withCredentials: true
+});
+    const customer = response.data;
+
+    dispatch(setUser({ customerId: customer.id, name: customer.name }));
+
+    localStorage.setItem("customerId", customer.id.toString());
+    localStorage.setItem("role", customer.isManager ? "manager" : "customer");
+
+    navigate("/home");
+  } catch (error) {
+    setFieldError("password", "אימייל או סיסמה שגויים");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-96"
-      >
-        <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
-
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full mb-4 px-4 py-2 border rounded"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full mb-4 px-4 py-2 border rounded"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
-        {success && <p className="text-green-600 text-sm mb-2">Logged in!</p>}
-
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+      <div className="bg-white p-8 rounded-xl shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-4 text-center">התחברות</h2>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
         >
-          Login
-        </button>
-      </form>
+          {({ isSubmitting }) => (
+            <Form>
+              <Field
+                name="email"
+                type="email"
+                placeholder="אימייל"
+                className="w-full mb-2 px-4 py-2 border rounded"
+              />
+              <ErrorMessage
+                name="email"
+                component="div"
+                className="text-red-500 text-sm mb-2"
+              />
+
+              <Field
+                name="password"
+                type="password"
+                placeholder="סיסמה"
+                className="w-full mb-2 px-4 py-2 border rounded"
+              />
+              <ErrorMessage
+                name="password"
+                component="div"
+                className="text-red-500 text-sm mb-2"
+              />
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded mt-2"
+              >
+                התחברות
+              </button>
+            </Form>
+          )}
+        </Formik>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import './SignUp.scss';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../../redux/userSlice';
 
 interface Allergy {
   id: number;
@@ -9,22 +12,23 @@ interface Allergy {
 }
 
 export default function SignUpForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phoneNumber: '',
     allergenIds: [] as number[],
+    isManager: false
   });
 
   const [allergyList, setAllergyList] = useState<Allergy[]>([]);
 
   useEffect(() => {
-    axios.get('/api/customers/allergens')
-      .then(res => {
-        setAllergyList(res.data);
-      })
+    axios.get('http://localhost:8080/api/customers/allergens')
+      .then(res => setAllergyList(res.data))
       .catch(err => console.error('Error loading allergies:', err));
   }, []);
 
@@ -45,9 +49,13 @@ export default function SignUpForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/customers/register', formData);
+      const res = await axios.post('http://localhost:8080/api/customers/register', formData);
       const customerId = res.data;
+
+      dispatch(setUser({ customerId: customerId.toString(), name: formData.name }));
       localStorage.setItem('customerId', customerId.toString());
+      localStorage.setItem('role', formData.isManager ? 'manager' : 'customer');
+
       navigate('/home');
     } catch (error) {
       console.error(error);
@@ -62,6 +70,18 @@ export default function SignUpForm() {
       <input name="email" placeholder="אימייל" type="email" onChange={handleChange} required />
       <input name="password" placeholder="סיסמה" type="password" onChange={handleChange} required />
       <input name="phoneNumber" placeholder="פלאפון" onChange={handleChange} required />
+
+      <label>
+        <input
+          type="checkbox"
+          checked={formData.isManager}
+          onChange={(e) =>
+            setFormData((prev) => ({ ...prev, isManager: e.target.checked }))
+          }
+        />
+        אני מנהל
+      </label>
+
       <div className="allergy-list">
         <p>סמן אלרגיות:</p>
         {allergyList.map(allergy => (
