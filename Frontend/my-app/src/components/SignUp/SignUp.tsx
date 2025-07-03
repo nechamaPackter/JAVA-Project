@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SignUp.scss';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';  // הוספת useDispatch
+import { setUser } from '../../redux/userSlice';  // הוספת הפעולה setUser
 
 interface Allergy {
   id: number;
@@ -9,7 +11,9 @@ interface Allergy {
 }
 
 export default function SignUpForm() {
+  const dispatch = useDispatch();  // שימוש ב-dispatch
   const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -47,7 +51,14 @@ export default function SignUpForm() {
     try {
       const res = await axios.post('/api/customers/register', formData);
       const customerId = res.data;
+
+      // עדכון ה-Redux עם פרטי המשתמש
+      dispatch(setUser({ customerId: customerId.toString(), name: formData.name }));
+
+      // שמירת ה-ID ב-localStorage
       localStorage.setItem('customerId', customerId.toString());
+
+      // ניווט לדף הבית
       navigate('/home');
     } catch (error) {
       console.error(error);
